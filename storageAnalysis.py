@@ -1,39 +1,35 @@
-import numpy as np
+import pandas as pd
 
-matrix_size = 360
-A = np.random.rand(matrix_size, matrix_size)
+# Function to calculate data storage for reduced SVD in KB per channel
+def calculate_storage(height, width, num_singular_values):
+    U_size = height * num_singular_values / 1024  # U: m x k
+    S_size = num_singular_values / 1024          # S: k
+    Vt_size = num_singular_values * width / 1024  # Vt: k x n
+    total_data = U_size + S_size + Vt_size
+    return total_data
 
-# Compute full SVD
-U, S, Vt = np.linalg.svd(A, full_matrices=False)
+# Input dimensions
+height = 512
+width = 768
 
-# Function to calculate data storage
-def calculate_storage(U, S, Vt, cutoff):
-    rank = len(S) - cutoff
-    U_reduced = U[:, :rank]
-    S_reduced = S[:rank]
-    Vt_reduced = Vt[:rank, :]
-    total_data = U_reduced.size + S_reduced.size + Vt_reduced.size
-    return U_reduced.size, S_reduced.size, Vt_reduced.size, total_data
-
-# Store results for different cutoffs
+# Store results for different numbers of singular values used
 results = []
-for cutoff in range(matrix_size):
-    U_size, S_size, Vt_size, total_data = calculate_storage(U, S, Vt, cutoff)
+max_singular_values = min(height, width)  # Max singular values is the minimum of dimensions
+for num_singular_values in range(1, max_singular_values + 1):  # Use at least 1 singular value
+    total_data_per_channel = calculate_storage(height, width, num_singular_values)
+    total_data_rgb = total_data_per_channel * 3  # Multiply by 3 for RGB channels
     results.append({
-        "Cutoff": cutoff,
-        "U_size": U_size,
-        "S_size": S_size,
-        "Vt_size": Vt_size,
-        "Total_data": total_data
+        "# Singular Values": num_singular_values,
+        "Total Data (KB)": total_data_rgb
     })
 
-# Display results
-import pandas as pd
+# Create a DataFrame to display results
 df = pd.DataFrame(results)
 
-# Disable truncation
+# Adjust pandas display settings to show all rows and columns
 pd.set_option("display.max_rows", None)  # Show all rows
 pd.set_option("display.max_columns", None)  # Show all columns
 pd.set_option("display.width", None)  # Don't wrap columns
 
-print(df)
+# Display results
+print(df.to_string(index=False))
