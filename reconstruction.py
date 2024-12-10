@@ -11,6 +11,10 @@ U, S, Vt = np.linalg.svd(A)
 print("Original Matrix A:")
 print(A)
 
+# Print the singular values
+print("\nSingular Values:")
+print(S)
+
 # Step 2: Modify the singular values by setting the smallest to 0
 S_modified = S.copy()
 S_modified[-1] = 0  # Set the smallest singular value to 0

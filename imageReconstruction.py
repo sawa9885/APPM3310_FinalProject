@@ -57,8 +57,8 @@ def compress_image_svd(image_path, num_singular_values):
     return img, compressed_image, original_size, total_reduced_size, total_singular_values
 
 # Parameters
-image_path = "images/1.bmp"
-num_singular_values = 512  # Adjust for desired compression level
+image_path = "images/2.bmp"
+num_singular_values = 20  # Adjust for desired compression level
 
 # Compress the image
 original_img, compressed_img, original_size, reduced_size, total_singular_values = compress_image_svd(image_path, num_singular_values)
